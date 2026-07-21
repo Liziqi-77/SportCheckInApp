@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_stats_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_stats_24.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_profile_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_profile_24.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_home_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_home_24.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_add_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_add_24.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_timer_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_timer_24.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.example.sportcheckin.app-debug-64:/drawable_ic_trophy_24.xml.flat",
+        "source": "com.example.sportcheckin.app-main-66:/drawable/ic_trophy_24.xml"
+    }
+]
