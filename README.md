@@ -49,6 +49,9 @@
 - [x] 日历月视图 / 年视图切换
 - [x] 日历状态颜色：绿色全部完成、黄色部分完成、灰色无记录
 - [x] 点击日期弹出当日打卡明细 BottomSheet
+- [x] 历史日期补卡 / 取消补卡
+- [x] 修改历史记录分钟数（保存后该项目当天标记为已完成）
+- [x] 未来日期禁止补卡
 - [x] 柱状图使用 MPAndroidChart
 - [x] 周视图：每日 7 根柱子，刚好完整展示，不需要滑动
 - [x] 月视图：每日 28-31 根柱子，支持横向滚动与双指缩放
@@ -70,7 +73,6 @@
 
 - [ ] 实际运动时长单独录入（当前打卡默认完成项目目标分钟）
 - [ ] 取消打卡留痕（当前取消勾选会删除当天该项目记录）
-- [ ] 历史日期补卡 / 修改历史记录
 - [ ] 年视图热力图严格按星期一列对齐
 - [ ] 图表 Tooltip 换成 MPAndroidChart MarkerView 气泡
 - [ ] 季度聚合严格 ISO 周规则可配置
@@ -95,3 +97,4 @@
 - 2026-07-21：修复统计图维度切换后周视图被缩放/可滑动的问题，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsScreen.kt`。
 - 2026-07-21：新增本 README，修改 `README.md`。
 - 2026-07-21：首页新增左滑删除手势、已完成项目沉底与浅绿色卡片，修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/home/HomeViewModel.kt`、`README.md`。
+- 2026-07-21：新增历史日期补卡/修改历史记录分钟数，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`README.md`。

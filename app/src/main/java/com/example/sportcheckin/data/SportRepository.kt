@@ -62,6 +62,28 @@ class SportRepository private constructor(context: Context) {
         }
     }
 
+    suspend fun setCheckIn(
+        projectId: Long,
+        date: LocalDate,
+        completed: Boolean,
+        minutes: Int
+    ) {
+        val key = DateUtils.toKey(date)
+        if (!completed) {
+            recordDao.delete(projectId, key)
+            return
+        }
+        val project = projectDao.getById(projectId) ?: return
+        recordDao.upsert(
+            CheckInRecordEntity(
+                projectId = project.id,
+                date = key,
+                completed = true,
+                minutes = minutes.coerceIn(1, 24 * 60)
+            )
+        )
+    }
+
     suspend fun pruneHistoryBefore(date: LocalDate) {
         recordDao.deleteBefore(DateUtils.toKey(date))
     }

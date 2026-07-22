@@ -1,6 +1,7 @@
 package com.example.sportcheckin.ui.stats
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +35,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +55,7 @@ import com.example.sportcheckin.model.DayDetailItem
 import com.example.sportcheckin.model.StatsDimension
 import com.example.sportcheckin.model.StatsUiState
 import com.example.sportcheckin.ui.components.CalendarStatusLegend
+import com.example.sportcheckin.ui.components.WheelTimePicker
 import com.example.sportcheckin.ui.components.MonthCalendarGrid
 import com.example.sportcheckin.ui.components.SportBarChart
 import com.example.sportcheckin.ui.components.YearHeatGrid
@@ -59,12 +67,14 @@ import com.example.sportcheckin.ui.theme.TextSecondary
 import com.example.sportcheckin.ui.theme.WarningYellow
 import com.example.sportcheckin.util.DateUtils
 import com.example.sportcheckin.util.toDurationText
+import java.time.LocalDate
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(viewModel: StatsViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var editingHistoryItem by remember { mutableStateOf<DayDetailItem?>(null) }
     val ui = state
 
     if (ui == null) {
@@ -167,9 +177,22 @@ fun StatsScreen(viewModel: StatsViewModel = viewModel()) {
         ) {
             DayDetailSheet(
                 ui = ui,
-                onClose = { viewModel.selectDate(null) }
+                onClose = { viewModel.selectDate(null) },
+                onToggle = { item, checked -> viewModel.setHistoryCompleted(item, checked) },
+                onEditMinutes = { item -> editingHistoryItem = item }
             )
         }
+    }
+
+    editingHistoryItem?.let { item ->
+        HistoryRecordEditorDialog(
+            item = item,
+            onDismiss = { editingHistoryItem = null },
+            onConfirm = { minutes ->
+                viewModel.updateHistoryMinutes(item.projectId, minutes)
+                editingHistoryItem = null
+            }
+        )
     }
 }
 
@@ -321,9 +344,12 @@ private fun SummaryItem(
 @Composable
 private fun DayDetailSheet(
     ui: StatsUiState,
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onToggle: (DayDetailItem, Boolean) -> Unit,
+    onEditMinutes: (DayDetailItem) -> Unit
 ) {
     val date = ui.selectedDate ?: return
+    val canEdit = !date.isAfter(LocalDate.now())
     val completedCount = ui.selectedDayDetails.count { it.completed }
     val statusColor = when {
         ui.projectCount == 0 || completedCount == 0 -> EmptyGray
@@ -356,6 +382,11 @@ private fun DayDetailSheet(
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
         )
+        Text(
+            text = if (canEdit) "可勾选补卡；点击“改时间”会把该项目标记为已完成并写入分钟数" else "未来日期不可补卡",
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (canEdit) MintGreen else MaterialTheme.colorScheme.error
+        )
         Spacer(modifier = Modifier.height(14.dp))
 
         if (ui.selectedDayDetails.isEmpty()) {
@@ -372,7 +403,12 @@ private fun DayDetailSheet(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(ui.selectedDayDetails, key = { it.projectId }) { item ->
-                    DayDetailRow(item = item)
+                    DayDetailRow(
+                        item = item,
+                        enabled = canEdit,
+                        onToggle = { checked -> onToggle(item, checked) },
+                        onEditMinutes = { onEditMinutes(item) }
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(18.dp))
@@ -385,7 +421,12 @@ private fun DayDetailSheet(
 }
 
 @Composable
-private fun DayDetailRow(item: DayDetailItem) {
+private fun DayDetailRow(
+    item: DayDetailItem,
+    enabled: Boolean,
+    onToggle: (Boolean) -> Unit,
+    onEditMinutes: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
@@ -393,16 +434,16 @@ private fun DayDetailRow(item: DayDetailItem) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(enabled = enabled) { onToggle(!item.completed) }
                 .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .clip(CircleShape)
-                    .background(if (item.completed) MintGreen else EmptyGray)
+            Checkbox(
+                checked = item.completed,
+                onCheckedChange = onToggle,
+                enabled = enabled
             )
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(4.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = item.name, style = MaterialTheme.typography.titleMedium)
                 Text(
@@ -411,12 +452,64 @@ private fun DayDetailRow(item: DayDetailItem) {
                     color = TextSecondary
                 )
             }
-            Text(
-                text = if (item.completed) "✓" else "—",
-                color = if (item.completed) MintGreen else TextSecondary,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
+            TextButton(onClick = onEditMinutes, enabled = enabled) {
+                Text(text = "改时间")
+            }
         }
     }
+}
+
+@Composable
+private fun HistoryRecordEditorDialog(
+    item: DayDetailItem,
+    onDismiss: () -> Unit,
+    onConfirm: (minutes: Int) -> Unit
+) {
+    var hour by remember { mutableIntStateOf((item.minutes.coerceIn(1, 1440)) / 60) }
+    var minute by remember { mutableIntStateOf((item.minutes.coerceIn(1, 1440)) % 60) }
+    val totalMinutes = hour * 60 + minute
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "修改历史记录") },
+        text = {
+            Column {
+                Text(text = item.name, style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "保存后该项目在当天会标记为已完成。",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                WheelTimePicker(
+                    initialHour = hour,
+                    initialMinute = minute,
+                    modifier = Modifier.fillMaxWidth()
+                ) { newHour, newMinute ->
+                    hour = newHour
+                    minute = newMinute
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "合计：${totalMinutes.toDurationText()}（范围 1 ~ 1440 分钟）",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                enabled = totalMinutes in 1..1440,
+                onClick = { onConfirm(totalMinutes) }
+            ) {
+                Text(text = "保存")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = "取消")
+            }
+        }
+    )
 }

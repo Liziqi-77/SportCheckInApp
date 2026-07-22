@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StatsViewModel(application: Application) : AndroidViewModel(application) {
@@ -68,6 +69,32 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectDate(date: LocalDate?) {
         selectedDate.value = date
+    }
+
+    fun setHistoryCompleted(item: DayDetailItem, completed: Boolean) {
+        val date = selectedDate.value ?: return
+        if (date.isAfter(LocalDate.now())) return
+        viewModelScope.launch {
+            repository.setCheckIn(
+                projectId = item.projectId,
+                date = date,
+                completed = completed,
+                minutes = if (completed) item.minutes else 0
+            )
+        }
+    }
+
+    fun updateHistoryMinutes(projectId: Long, minutes: Int) {
+        val date = selectedDate.value ?: return
+        if (date.isAfter(LocalDate.now())) return
+        viewModelScope.launch {
+            repository.setCheckIn(
+                projectId = projectId,
+                date = date,
+                completed = true,
+                minutes = minutes
+            )
+        }
     }
 
     fun goToday() {
