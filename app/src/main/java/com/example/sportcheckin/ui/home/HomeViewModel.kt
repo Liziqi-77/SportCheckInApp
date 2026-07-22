@@ -36,10 +36,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         repository.projects,
         todayRecords
     ) { projects, records ->
+        val checkedIds = records.filter { it.completed }.map { it.projectId }.toSet()
+        val sortedProjects = projects.sortedWith(
+            compareBy<ExerciseProjectEntity> { checkedIds.contains(it.id) }
+                .thenBy { it.sortOrder }
+                .thenBy { it.createdAt }
+        )
         HomeUiState(
             today = today.value,
-            projects = projects,
-            checkedProjectIds = records.filter { it.completed }.map { it.projectId }.toSet(),
+            projects = sortedProjects,
+            checkedProjectIds = checkedIds,
             isLoading = false
         )
     }.stateIn(

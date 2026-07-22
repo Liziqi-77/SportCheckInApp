@@ -1,6 +1,7 @@
 package com.example.sportcheckin.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,12 +21,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,12 +50,12 @@ import com.example.sportcheckin.data.ExerciseProjectEntity
 import com.example.sportcheckin.ui.components.WheelTimePicker
 import com.example.sportcheckin.ui.theme.BrandOrange
 import com.example.sportcheckin.ui.theme.MintGreen
+import com.example.sportcheckin.ui.theme.SoftGreen
 import com.example.sportcheckin.ui.theme.TextSecondary
 import com.example.sportcheckin.util.toDurationText
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -70,7 +76,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             )
             Text(
                 text = state.today.format(DateTimeFormatter.ofPattern("M月d日 EEEE", Locale.CHINA)) +
-                    " · 长按卡片编辑，左滑/删除按钮移除",
+                        " · 长按卡片编辑，左滑删除；已完成自动沉底",
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary
             )
@@ -159,7 +165,7 @@ private fun EmptyHomeHint(modifier: Modifier = Modifier) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ExerciseProjectCard(
     project: ExerciseProjectEntity,
@@ -168,46 +174,85 @@ private fun ExerciseProjectCard(
     onLongEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .combinedClickable(
-                onClick = { onCheckedChange(!checked) },
-                onLongClick = onLongEdit
-            ),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Checkbox(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MintGreen,
-                    uncheckedColor = TextSecondary,
-                    checkmarkColor = MaterialTheme.colorScheme.surface
-                )
-            )
-            Column(modifier = Modifier.weight(1f)) {
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                onDelete()
+                true
+            } else {
+                false
+            }
+        }
+    )
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        enableDismissFromEndToStart = true,
+        backgroundContent = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.error)
+                    .padding(horizontal = 22.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Text(
-                    text = project.name,
+                    text = "删除",
+                    color = MaterialTheme.colorScheme.onError,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = "目标 ${project.targetMinutes.toDurationText()} / 天",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    fontWeight = FontWeight.Bold
                 )
             }
-            TextButton(onClick = onDelete) {
-                Text(text = "删除", color = MaterialTheme.colorScheme.error)
+        }
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = { onCheckedChange(!checked) },
+                    onLongClick = onLongEdit
+                ),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = if (checked) SoftGreen else MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange,
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = MintGreen,
+                        uncheckedColor = TextSecondary,
+                        checkmarkColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = project.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "目标 ${project.targetMinutes.toDurationText()} / 天",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+                Text(
+                    text = if (checked) "已完成" else "待完成",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (checked) MintGreen else TextSecondary,
+                    fontWeight = if (checked) FontWeight.Bold else FontWeight.Normal
+                )
             }
         }
     }
