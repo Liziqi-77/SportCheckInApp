@@ -22,6 +22,7 @@ class SportRepository private constructor(context: Context) {
             ExerciseProjectEntity(
                 name = name.trim(),
                 targetMinutes = targetMinutes.coerceIn(1, 24 * 60),
+                startDate = DateUtils.toKey(LocalDate.now()),
                 sortOrder = projectDao.nextSortOrder()
             )
         )

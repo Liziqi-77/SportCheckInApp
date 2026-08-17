@@ -52,6 +52,7 @@
 - [x] 历史日期补卡 / 取消补卡
 - [x] 修改历史记录分钟数（保存后该项目当天标记为已完成）
 - [x] 未来日期禁止补卡
+- [x] 新增运动项目按创建日开始生效，不影响历史日期的完成度与明细
 - [x] 柱状图使用 MPAndroidChart
 - [x] 周视图：每日 7 根柱子，刚好完整展示，不需要滑动
 - [x] 月视图：每日 28-31 根柱子，支持横向滚动与双指缩放
@@ -86,6 +87,7 @@
 ## 关键实现说明
 
 - 数据库两张表：`exercise_projects` 存项目；`check_in_records` 存打卡，主键为 `projectId + date`。
+- `exercise_projects.startDate` 表示项目生效日；统计日历/明细只把 `startDate <= 当前日期` 的项目计入完成度，因此新增项目不影响历史。
 - 勾选完成时，会把项目当前 `targetMinutes` 写入当天记录；统计页按已完成记录的 `minutes` 求和。
 - 修改项目目标时间后，如果今天已打卡，会同步更新今天记录分钟数。
 - 统计图维度切换使用 `key(ui.dimension)` 重建图表，避免月视图缩放状态污染周/季/年视图。
@@ -98,3 +100,4 @@
 - 2026-07-21：新增本 README，修改 `README.md`。
 - 2026-07-21：首页新增左滑删除手势、已完成项目沉底与浅绿色卡片，修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/home/HomeViewModel.kt`、`README.md`。
 - 2026-07-21：新增历史日期补卡/修改历史记录分钟数，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`README.md`。
+- 2026-07-21：新增运动项目生效日，新增项目只影响当天和未来，不影响历史完成度；修改 `app/src/main/java/com/example/sportcheckin/data/Entities.kt`、`app/src/main/java/com/example/sportcheckin/data/AppDatabase.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`README.md`。

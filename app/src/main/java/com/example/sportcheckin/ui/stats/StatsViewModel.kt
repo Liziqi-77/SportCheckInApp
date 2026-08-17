@@ -121,19 +121,21 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
             .groupBy { LocalDate.parse(it.date) }
 
         val currentMonth = YearMonth.from(currentFilter.anchor)
-        val monthCells = buildMonthCells(currentMonth, projects.size, completedByDate)
+        val monthCells = buildMonthCells(currentMonth, projects, completedByDate)
         val yearHeat = (1..12).map { monthValue ->
             val month = YearMonth.of(currentFilter.anchor.year, monthValue)
             MonthHeat(
                 month = month,
                 days = DateUtils.daysOfMonth(month).map { date ->
-                    buildDayCell(date, true, projects.size, completedByDate)
+                    buildDayCell(date, true, effectiveProjectsOn(projects, date), completedByDate)
                 }
             )
         }
         val period = periodRange(currentFilter.anchor, currentFilter.dimension)
         val chartPoints = buildChartPoints(currentFilter, completedByDate)
         val summary = buildSummary(period.first, period.second, completedByDate)
+        val detailDate = currentFilter.selectedDate ?: currentFilter.anchor
+        val effectiveProjectsForDetail = effectiveProjectsOn(projects, detailDate)
 
         return StatsUiState(
             anchor = currentFilter.anchor,
@@ -145,21 +147,21 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
             chartPoints = chartPoints,
             summary = summary,
             selectedDate = currentFilter.selectedDate,
-            selectedDayDetails = buildSelectedDetails(projects, completedByDate, currentFilter.selectedDate ?: currentFilter.anchor),
-            projectCount = projects.size
+            selectedDayDetails = buildSelectedDetails(effectiveProjectsForDetail, completedByDate, detailDate),
+            projectCount = effectiveProjectsForDetail.size
         )
     }
 
     private fun buildMonthCells(
         month: YearMonth,
-        projectCount: Int,
+        projects: List<ExerciseProjectEntity>,
         completedByDate: Map<LocalDate, List<CheckInRecordEntity>>
     ): List<DayCell> {
         val firstDay = month.atDay(1)
         val leadingBlankCount = firstDay.dayOfWeek.value - 1
         val cells = MutableList(leadingBlankCount) { DayCell.Empty }
         cells += DateUtils.daysOfMonth(month).map { date ->
-            buildDayCell(date, true, projectCount, completedByDate)
+            buildDayCell(date, true, effectiveProjectsOn(projects, date), completedByDate)
         }
         while (cells.size % 7 != 0) {
             cells += DayCell.Empty
@@ -167,21 +169,30 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
         return cells
     }
 
+    private fun effectiveProjectsOn(
+        projects: List<ExerciseProjectEntity>,
+        date: LocalDate
+    ): List<ExerciseProjectEntity> {
+        val key = DateUtils.toKey(date)
+        return projects.filter { it.startDate.isEmpty() || it.startDate <= key }
+    }
+
     private fun buildDayCell(
         date: LocalDate,
         inCurrentPeriod: Boolean,
-        projectCount: Int,
+        effectiveProjects: List<ExerciseProjectEntity>,
         completedByDate: Map<LocalDate, List<CheckInRecordEntity>>
     ): DayCell {
-        val dayRecords = completedByDate[date].orEmpty()
+        val effectiveProjectIds = effectiveProjects.map { it.id }.toSet()
+        val dayRecords = completedByDate[date].orEmpty().filter { it.projectId in effectiveProjectIds }
         val completedCount = dayRecords.count { it.completed }
         return DayCell(
             date = date,
             inCurrentPeriod = inCurrentPeriod,
-            status = dayStatus(projectCount, completedCount),
+            status = dayStatus(effectiveProjects.size, completedCount),
             totalMinutes = dayRecords.sumOf { it.minutes },
             completedCount = completedCount,
-            projectCount = projectCount
+            projectCount = effectiveProjects.size
         )
     }
 

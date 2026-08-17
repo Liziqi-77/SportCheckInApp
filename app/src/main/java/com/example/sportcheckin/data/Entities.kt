@@ -1,5 +1,6 @@
 package com.example.sportcheckin.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
@@ -10,6 +11,9 @@ data class ExerciseProjectEntity(
     val name: String,
     val targetMinutes: Int,
     val createdAt: Long = System.currentTimeMillis(),
+    /** 项目生效日期 yyyy-MM-dd；历史日期早于该值时不计入统计与日历完成度。 */
+    @ColumnInfo(defaultValue = "")
+    val startDate: String = "",
     val sortOrder: Int = 0
 )
 
