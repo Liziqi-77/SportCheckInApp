@@ -61,6 +61,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
     var editingProject by remember { mutableStateOf<ExerciseProjectEntity?>(null) }
+    var pendingDeleteProject by remember { mutableStateOf<ExerciseProjectEntity?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -97,7 +98,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         checked = state.checkedProjectIds.contains(project.id),
                         onCheckedChange = { checked -> viewModel.toggle(project, checked) },
                         onLongEdit = { editingProject = project },
-                        onDelete = { viewModel.deleteProject(project) }
+                        onDeleteRequest = { pendingDeleteProject = project }
                     )
                 }
             }
@@ -144,6 +145,31 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             }
         )
     }
+
+    pendingDeleteProject?.let { project ->
+        AlertDialog(
+            onDismissRequest = { pendingDeleteProject = null },
+            title = { Text(text = "删除运动项目？") },
+            text = {
+                Text(text = "将删除“${project.name}”以及它的全部历史打卡记录，此操作不可恢复。")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteProject(project)
+                        pendingDeleteProject = null
+                    }
+                ) {
+                    Text(text = "确认删除", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDeleteProject = null }) {
+                    Text(text = "取消")
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -172,13 +198,13 @@ private fun ExerciseProjectCard(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onLongEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDeleteRequest: () -> Unit
 ) {
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = { value ->
             if (value == SwipeToDismissBoxValue.EndToStart) {
-                onDelete()
-                true
+                onDeleteRequest()
+                false
             } else {
                 false
             }

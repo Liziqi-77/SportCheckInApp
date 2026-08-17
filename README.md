@@ -36,7 +36,7 @@
 - [x] 首页运动项目卡片列表
 - [x] 新建任意数量运动项目
 - [x] 长按卡片编辑项目名称与每日目标时间
-- [x] 删除运动项目（首页左滑手势删除，删除时级联删除该项目历史打卡记录）
+- [x] 删除运动项目（首页左滑触发确认弹窗，确认后才级联删除该项目历史打卡记录；取消则保留）
 - [x] 今日一键打卡 / 取消打卡
 - [x] 已完成项目自动沉底，未完成项目保持在上方
 - [x] 已完成项目卡片背景设置为浅绿色
@@ -101,3 +101,4 @@
 - 2026-07-21：首页新增左滑删除手势、已完成项目沉底与浅绿色卡片，修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/home/HomeViewModel.kt`、`README.md`。
 - 2026-07-21：新增历史日期补卡/修改历史记录分钟数，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`README.md`。
 - 2026-07-21：新增运动项目生效日，新增项目只影响当天和未来，不影响历史完成度；修改 `app/src/main/java/com/example/sportcheckin/data/Entities.kt`、`app/src/main/java/com/example/sportcheckin/data/AppDatabase.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`README.md`。
+- 2026-07-21：左滑删除增加二次确认，取消则不删除；修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`README.md`。
