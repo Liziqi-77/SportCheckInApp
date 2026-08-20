@@ -47,6 +47,7 @@
 - [x] 滚轮禁止手动输入数字，组合范围校验为 1 ~ 1440 分钟
 - [x] 统计页三段式结构：顶部日历、中部柱状图、底部数据摘要卡
 - [x] 日历月视图 / 年视图切换
+- [x] 年视图热力图严格按星期一列对齐
 - [x] 日历状态颜色：绿色全部完成、黄色部分完成、灰色无记录
 - [x] 点击日期弹出当日打卡明细 BottomSheet
 - [x] 历史日期补卡 / 取消补卡
@@ -74,7 +75,6 @@
 
 - [ ] 实际运动时长单独录入（当前打卡默认完成项目目标分钟）
 - [ ] 取消打卡留痕（当前取消勾选会删除当天该项目记录）
-- [ ] 年视图热力图严格按星期一列对齐
 - [ ] 图表 Tooltip 换成 MPAndroidChart MarkerView 气泡
 - [ ] 季度聚合严格 ISO 周规则可配置
 - [ ] 日均时长可选「只统计截至今天」而非完整周期天数
@@ -102,3 +102,4 @@
 - 2026-07-21：新增历史日期补卡/修改历史记录分钟数，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsScreen.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`README.md`。
 - 2026-07-21：新增运动项目生效日，新增项目只影响当天和未来，不影响历史完成度；修改 `app/src/main/java/com/example/sportcheckin/data/Entities.kt`、`app/src/main/java/com/example/sportcheckin/data/AppDatabase.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`README.md`。
 - 2026-07-21：左滑删除增加二次确认，取消则不删除；修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`README.md`。
+- 2026-07-21：年视图热力图严格按星期一列对齐，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/ui/components/CalendarViews.kt`、`README.md`。

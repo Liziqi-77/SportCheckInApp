@@ -126,9 +126,7 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
             val month = YearMonth.of(currentFilter.anchor.year, monthValue)
             MonthHeat(
                 month = month,
-                days = DateUtils.daysOfMonth(month).map { date ->
-                    buildDayCell(date, true, effectiveProjectsOn(projects, date), completedByDate)
-                }
+                days = buildMonthCells(month, projects, completedByDate)
             )
         }
         val period = periodRange(currentFilter.anchor, currentFilter.dimension)

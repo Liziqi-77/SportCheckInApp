@@ -172,20 +172,22 @@ fun YearHeatGrid(
                     month.days.chunked(7).forEach { week ->
                         Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                             week.forEach { day ->
-                                val color = when (day.status) {
-                                    DayStatus.ALL -> MintGreen
-                                    DayStatus.PARTIAL -> WarningYellow
-                                    DayStatus.NONE -> EmptyGray
+                                if (day.date == null) {
+                                    Box(modifier = Modifier.size(10.dp))
+                                } else {
+                                    val color = when (day.status) {
+                                        DayStatus.ALL -> MintGreen
+                                        DayStatus.PARTIAL -> WarningYellow
+                                        DayStatus.NONE -> EmptyGray
+                                    }
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .clip(RoundedCornerShape(2.dp))
+                                            .background(color)
+                                            .clickable { day.date?.let(onDateClick) }
+                                    )
                                 }
-                                Box(
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(color)
-                                        .clickable(enabled = day.date != null) {
-                                            day.date?.let(onDateClick)
-                                        }
-                                )
                             }
                             repeat(7 - week.size) {
                                 Box(modifier = Modifier.size(10.dp))
