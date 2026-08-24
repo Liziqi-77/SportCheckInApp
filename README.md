@@ -59,7 +59,7 @@
 - [x] 月视图：每日 28-31 根柱子，支持横向滚动与双指缩放
 - [x] 季度视图：按周聚合，约 13 根柱子
 - [x] 年视图：按月聚合，12 根柱子
-- [x] 点击柱子显示数值提示（当前为 Toast）
+- [x] 点击柱子显示 MPAndroidChart MarkerView 气泡提示
 - [x] 数据摘要卡：总运动时长、平均每日运动时长
 - [x] 总时长超过 60 分钟自动显示为「X小时X分钟」
 - [x] 日均时长按周期总天数计算并保留 1 位小数
@@ -75,7 +75,6 @@
 
 - [ ] 实际运动时长单独录入（当前打卡默认完成项目目标分钟）
 - [ ] 取消打卡留痕（当前取消勾选会删除当天该项目记录）
-- [ ] 图表 Tooltip 换成 MPAndroidChart MarkerView 气泡
 - [ ] 季度聚合严格 ISO 周规则可配置
 - [ ] 日均时长可选「只统计截至今天」而非完整周期天数
 - [ ] 每日打卡提醒真实通知/闹钟
@@ -103,3 +102,4 @@
 - 2026-07-21：新增运动项目生效日，新增项目只影响当天和未来，不影响历史完成度；修改 `app/src/main/java/com/example/sportcheckin/data/Entities.kt`、`app/src/main/java/com/example/sportcheckin/data/AppDatabase.kt`、`app/src/main/java/com/example/sportcheckin/data/SportRepository.kt`、`app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`README.md`。
 - 2026-07-21：左滑删除增加二次确认，取消则不删除；修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`README.md`。
 - 2026-07-21：年视图热力图严格按星期一列对齐，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/ui/components/CalendarViews.kt`、`README.md`。
+- 2026-07-21：图表点击提示从 Toast 换成 MarkerView 气泡，修改 `app/src/main/java/com/example/sportcheckin/ui/components/SportBarChart.kt`，新增 `app/src/main/java/com/example/sportcheckin/ui/components/SportMarkerView.kt`、`app/src/main/res/layout/chart_marker_view.xml`、`app/src/main/res/drawable/bg_chart_marker.xml`、`README.md`。
