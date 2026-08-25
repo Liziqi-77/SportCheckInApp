@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.sportcheckin.reminder.ReminderScheduler
 import com.example.sportcheckin.workers.DailyResetWorker
 import java.time.Duration
 import java.time.LocalDateTime
@@ -13,6 +14,7 @@ class SportCheckInApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         scheduleDailyMaintenance()
+        ReminderScheduler.syncWithPreference(this)
     }
 
     private fun scheduleDailyMaintenance() {

@@ -1,8 +1,5 @@
 package com.example.sportcheckin.ui.components
 
-
-package com.example.sportcheckin.ui.components
-
 import android.content.Context
 import android.widget.TextView
 import com.example.sportcheckin.R

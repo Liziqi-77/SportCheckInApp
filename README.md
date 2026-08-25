@@ -65,7 +65,9 @@
 - [x] 日均时长按周期总天数计算并保留 1 位小数
 - [x] 统计周期切换：上一段 / 下一段 / 回到今天
 - [x] 修复柱状图维度切换后的缩放状态污染：月/季/年缩放后回到周视图，周视图仍保持 7 根完整展示
-- [x] 个人中心预留入口 UI：个人资料、提醒、备份恢复、深色模式、勋章墙
+- [x] 个人中心预留入口 UI：个人资料、备份恢复、深色模式、勋章墙
+- [x] 每日打卡提醒真实本地通知：我的页面开关控制，默认每天 20:00，Android 13+ 自动请求通知权限
+- [x] 提醒可用性检测与系统设置引导：检测通知开关，引导打开通知、自启动、关闭电池优化
 - [x] 浅色活力橙品牌主题，薄荷绿/警示黄状态色
 - [x] 首页空状态引导、统计页无项目提示
 - [x] 矢量 Tab 图标、摘要图标、自适应启动图标
@@ -77,7 +79,6 @@
 - [ ] 取消打卡留痕（当前取消勾选会删除当天该项目记录）
 - [ ] 季度聚合严格 ISO 周规则可配置
 - [ ] 日均时长可选「只统计截至今天」而非完整周期天数
-- [ ] 每日打卡提醒真实通知/闹钟
 - [ ] 数据备份与恢复真实能力
 - [ ] 深色模式真实切换并完善深色配色
 - [ ] 成就勋章墙真实规则与页面
@@ -103,3 +104,5 @@
 - 2026-07-21：左滑删除增加二次确认，取消则不删除；修改 `app/src/main/java/com/example/sportcheckin/ui/home/HomeScreen.kt`、`README.md`。
 - 2026-07-21：年视图热力图严格按星期一列对齐，修改 `app/src/main/java/com/example/sportcheckin/ui/stats/StatsViewModel.kt`、`app/src/main/java/com/example/sportcheckin/ui/components/CalendarViews.kt`、`README.md`。
 - 2026-07-21：图表点击提示从 Toast 换成 MarkerView 气泡，修改 `app/src/main/java/com/example/sportcheckin/ui/components/SportBarChart.kt`，新增 `app/src/main/java/com/example/sportcheckin/ui/components/SportMarkerView.kt`、`app/src/main/res/layout/chart_marker_view.xml`、`app/src/main/res/drawable/bg_chart_marker.xml`、`README.md`。
+- 2026-07-21：新增每日打卡提醒真实本地通知，修改 `app/src/main/AndroidManifest.xml`、`app/src/main/java/com/example/sportcheckin/SportCheckInApplication.kt`、`app/src/main/java/com/example/sportcheckin/ui/profile/ProfileScreen.kt`，新增 `app/src/main/java/com/example/sportcheckin/ui/profile/ProfileViewModel.kt`、`app/src/main/java/com/example/sportcheckin/reminder/ReminderPreferences.kt`、`app/src/main/java/com/example/sportcheckin/reminder/ReminderScheduler.kt`、`app/src/main/java/com/example/sportcheckin/reminder/ReminderWorker.kt`、`README.md`。
+- 2026-07-21：新增提醒可用性检测与系统设置引导，修改 `app/src/main/java/com/example/sportcheckin/ui/profile/ProfileScreen.kt`，新增 `app/src/main/java/com/example/sportcheckin/reminder/SystemSettingsNavigator.kt`、`README.md`。
